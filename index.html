@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Pro: Medio Ambiente Edition</title>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Space+Grotesk:wght@300;500;700;900&family=Chewy&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #ffffff;
+            color: #1e293b;
+            overflow-x: hidden;
+            overflow-y: auto;
+            cursor: default;
+            touch-action: manipulation;
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- FONDO ECOLÓGICO BRILLANTE --- */
+        .bg-eco-bright {
+            position: fixed; inset: 0; z-index: -10;
+            background: linear-gradient(124deg, #059669, #10b981, #34d399, #14b8a6, #84cc16, #22c55e);
+            background-size: 800% 800%;
+            animation: eco-pan 18s ease infinite;
+        }
+        @keyframes eco-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- DESTELLO / BRILLO QUE PASA POR LA PANTALLA --- */
+        .screen-shine-sweep {
+            position: fixed; top: 0; left: -150%; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-30deg);
+            z-index: -5;
+            pointer-events: none;
+            animation: sweep-shine 5s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+        }
+        @keyframes sweep-shine {
+            0% { left: -150%; }
+            20% { left: 150%; }
+            100% { left: 150%; }
+        }
+
+        /* --- TIPOGRAFÍA --- */
+        .font-display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; }
+        .font-fun { font-family: 'Chewy', cursive; letter-spacing: 0.05em; }
+
+        /* --- TARJETAS SÓLIDAS PRISMÁTICAS --- */
+        .card-glass {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(240, 253, 244, 0.95)); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 15px 35px -5px rgba(0, 0, 0, 0.15),
+                inset 0 0 20px rgba(255, 255, 255, 0.5);
+            border-radius: 32px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: visible !important;
+        }
+        
+        .card-glass::before {
+            content: "";
+            position: absolute; top: 0; left: 0; width: 100%; height: 6px;
+            background: linear-gradient(90deg, #10b981, #facc15, #14b8a6);
+            border-radius: 32px 32px 0 0;
+        }
+
+        /* --- DINAMISMO: FLOTACIÓN CONSTANTE --- */
+        @keyframes dynamic-float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-6px) rotate(1deg); }
+            75% { transform: translateY(4px) rotate(-1deg); }
+        }
+        .anim-dynamic-float {
+            animation: dynamic-float 5s ease-in-out infinite;
+        }
+
+        /* --- EFECTO EXTRA: RESPIRACIÓN DEL TÍTULO --- */
+        @keyframes title-breathe {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+            50% { transform: scale(1.02); filter: drop-shadow(0 10px 15px rgba(255,255,255,0.3)); }
+        }
+        .anim-title-breathe {
+            animation: title-breathe 3s ease-in-out infinite;
+        }
+
+        /* --- TEXTO ECO BRILLANTE --- */
+        .text-eco {
+            background: linear-gradient(to right, #047857, #10b981, #84cc16, #0ea5e9, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 300% auto;
+            animation: eco-move 4s linear infinite;
+        }
+
+        @keyframes eco-move { to { background-position: 300% center; } }
+
+        /* --- BOTONES DE CONTROL FIJOS --- */
+        .btn-control-fixed {
+            width: 48px; height: 48px;
+            border-radius: 16px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: #64748b;
+            position: relative;
+        }
+        @media (min-width: 768px) {
+            .btn-control-fixed { width: 56px; height: 56px; border-radius: 20px; }
+        }
+        .btn-control-fixed:hover { 
+            border-color: #10b981; color: #10b981; 
+            transform: translateY(-4px) rotate(5deg);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); 
+        }
+        .btn-control-fixed:active { transform: scale(0.95); }
+
+        /* --- EFECTO EXTRA: HOVER SHINE EN BOTONES --- */
+        .hover-shine-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .hover-shine-effect::after {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-20deg);
+            transition: all 0.5s ease;
+        }
+        .hover-shine-effect:hover::after { left: 200%; }
+
+        /* --- BOTONES PRINCIPALES (Verdes) --- */
+        .btn-eco-main {
+            background: linear-gradient(90deg, #16a34a 0%, #059669 50%, #16a34a 100%);
+            background-size: 200% auto;
+            color: white; border: none; border-radius: 999px;
+            font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+            box-shadow: 0 8px 20px -5px rgba(22, 163, 74, 0.5);
+            transition: all 0.4s; animation: btn-shine 3s linear infinite;
+        }
+        @keyframes btn-shine { to { background-position: 200% center; } }
+        .btn-eco-main:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 15px 35px -5px rgba(22, 163, 74, 0.7); }
+        .btn-eco-main:active { transform: scale(0.95); }
+
+        /* --- OPCIONES DE JUEGO LÚDICAS --- */
+        .btn-option-ludic {
+            border: 3px solid transparent; 
+            border-radius: 20px;
+            color: #1e293b;
+            font-weight: 700;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+            position: relative; top: 0;
+            overflow: hidden;
+        }
+        @media (min-width: 768px) {
+            .btn-option-ludic { border-radius: 24px; box-shadow: 0 6px 0 rgba(0,0,0,0.05); }
+        }
+        .btn-option-ludic:hover { transform: translateY(-4px) scale(1.01); filter: brightness(1.02); }
+        .btn-option-ludic:active { top: 4px; box-shadow: 0 0 0 transparent !important; transform: translateY(0); }
+
+        /* COLORES EXACTOS SOLICITADOS PARA RESPUESTAS: */
+        /* 1. Verde Bajito */
+        .btn-option-ludic.opt-0 { background-color: #dcfce7; border-color: #86efac; color: #14532d; box-shadow: 0 4px 0 #bbf7d0; } 
+        /* 2. Verde Oscuro */
+        .btn-option-ludic.opt-1 { background-color: #14532d; border-color: #064e3b; color: #ffffff; box-shadow: 0 4px 0 #022c22; } 
+        /* 3. Verde Medio */
+        .btn-option-ludic.opt-2 { background-color: #22c55e; border-color: #16a34a; color: #ffffff; box-shadow: 0 4px 0 #15803d; } 
+        
+        /* --- EFECTO ÉPICO PARA RESPUESTA CORRECTA --- */
+        @keyframes epic-correct-burst {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.8); background-color: #4ade80; }
+            50% { transform: scale(1.15); box-shadow: 0 0 50px 20px rgba(74, 222, 128, 0.9), 0 0 0 20px rgba(74, 222, 128, 0.5); background-color: #22c55e; border-color: white; color: white;}
+            100% { transform: scale(1.05); box-shadow: 0 0 25px 10px rgba(74, 222, 128, 0.5), 0 0 0 50px rgba(74, 222, 128, 0); background-color: #16a34a; border-color: #15803d; color: white;}
+        }
+        .btn-option-ludic.correct-epic { 
+            animation: epic-correct-burst 0.5s forwards !important;
+            z-index: 50;
+        }
+
+        .btn-option-ludic.wrong-epic { 
+            background: #ef4444 !important; border-color: #991b1b !important; color: white !important; 
+            box-shadow: 0 4px 0 #7f1d1d !important; 
+            animation: shake-hard 0.4s forwards !important;
+        }
+
+        /* --- EFECTO ÉPICO: REVELAR RESPUESTA CORRECTA AL ACABAR EL TIEMPO --- */
+        @keyframes time-reveal {
+            0% { transform: scale(1); box-shadow: 0 0 0px 0px rgba(34,197,94,0.7); border-color: #4ade80;}
+            50% { transform: scale(1.03) translateX(3px); box-shadow: 0 0 20px 5px rgba(34,197,94,0.9); border-color: #fff;}
+            100% { transform: scale(1.03) translateX(-3px); box-shadow: 0 0 30px 10px rgba(34,197,94,1); border-color: #fff;}
+        }
+        .highlight-epic-reveal {
+            animation: time-reveal 0.3s infinite alternate !important;
+            background: linear-gradient(90deg, #22c55e, #16a34a) !important;
+            color: white !important;
+            z-index: 50;
+            border-width: 3px !important;
+        }
+        @media (min-width: 768px) { .highlight-epic-reveal { border-width: 4px !important; } }
+
+        /* --- LOGO EMPRESA & MARCA DE AGUA --- */
+        .main-logo-container { margin-bottom: 1rem; animation: heartbeat 3s infinite ease-in-out; }
+        .main-logo-img { max-width: 220px; height: auto; filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+        @media (min-width: 768px) { .main-logo-img { max-width: 320px; } }
+
+        .watermark-container { margin-top: 0.5rem; display: flex; justify-content: center; opacity: 0.9; filter: contrast(1.1) brightness(0) invert(1); mix-blend-mode: normal; }
+        .watermark-img { max-width: 180px; height: auto; }
+        @media (min-width: 768px) { .watermark-img { max-width: 240px; } }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+            50% { transform: scale(1.05); filter: brightness(0) invert(1) drop-shadow(0 0 15px rgba(255,255,255,0.9)); }
+        }
+
+        /* --- ANIMACIONES Y EFECTOS ÉPICOS --- */
+        @keyframes pop-in {
+            0% { opacity: 0; transform: scale(0.7) rotate(-3deg); }
+            70% { transform: scale(1.02) rotate(1deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        .anim-enter { animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        /* Temblor Fuerte para Error */
+        @keyframes shake-hard {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-15px) rotate(-3deg); }
+            40% { transform: translateX(15px) rotate(3deg); }
+            60% { transform: translateX(-10px) rotate(-2deg); }
+            80% { transform: translateX(10px) rotate(2deg); }
+        }
+        .anim-shake-hard { animation: shake-hard 0.4s ease-in-out; }
+
+        /* Efecto Destello Rojo Épico de Error */
+        .wrong-screen-flash {
+            position: fixed; inset: 0; z-index: 8888; pointer-events: none;
+            background: radial-gradient(circle at center, transparent 10%, rgba(255, 0, 0, 0.7) 100%);
+            animation: red-glitch 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: brightness(0.8) contrast(1.5) hue-rotate(-20deg);
+        }
+        @keyframes red-glitch {
+            0% { opacity: 0; transform: scale(1); }
+            10% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0; transform: scale(1); }
+        }
+
+        /* Rayos Giratorios Pantalla Final */
+        .sunburst-win {
+            position: fixed; top: 50%; left: 50%;
+            width: 250vmax; height: 250vmax;
+            background: repeating-conic-gradient(from 0deg, rgba(255,255,255,0.15) 0deg 15deg, transparent 15deg 30deg);
+            transform: translate(-50%, -50%);
+            animation: spin-sunburst 35s linear infinite; pointer-events: none; z-index: -5;
+        }
+        @keyframes spin-sunburst { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* Glitch para Time Up */
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); } 20% { transform: skew(-10deg); } 40% { transform: skew(10deg); }
+            60% { transform: skew(-5deg); } 80% { transform: skew(5deg); } 100% { transform: skew(0deg); }
+        }
+        .anim-glitch { animation: glitch-skew 0.3s infinite; color: #ef4444 !important; }
+
+        /* --- BARRA DE CARGA Y ANIMACIONES DIGITALES --- */
+        .loading-bar-container {
+            width: 90%; max-width: 320px; height: 20px; background: #1e293b; border-radius: 999px;
+            overflow: hidden; border: 3px solid #334155; box-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative;
+        }
+        @media (min-width: 768px) {
+            .loading-bar-container { height: 24px; border-width: 4px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        }
+        .loading-bar-fill {
+            height: 100%; background: linear-gradient(90deg, #10b981, #facc15, #34d399, #10b981);
+            background-size: 200% 100%; width: 0%; animation: btn-shine 0.5s linear infinite; transition: width 0.1s linear;
+        }
+
+        /* --- NUEVO CONTADOR ÉPICO DE 3 SEGUNDOS --- */
+        @keyframes countdown-pop {
+            0% { transform: scale(0.2) rotate(-10deg); opacity: 0; filter: blur(10px); }
+            50% { transform: scale(1.6) rotate(5deg); opacity: 1; filter: drop-shadow(0 0 30px rgba(255,255,255,0.8)); }
+            80% { transform: scale(1.4) rotate(0deg); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 1; }
+        }
+        .anim-countdown-pop {
+            animation: countdown-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            will-change: transform, opacity;
+        }
+
+        .time-up-overlay {
+            position: fixed; inset: 0; background: rgba(239, 68, 68, 0.3); z-index: 100;
+            pointer-events: none; animation: pulse-red 0.5s infinite; backdrop-filter: grayscale(100%) contrast(1.5);
+        }
+        @keyframes pulse-red { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+
+        .confetti-piece {
+            position: absolute; width: 10px; height: 10px; top: 0; opacity: 0;
+            border-radius: 4px; box-shadow: 0 0 4px rgba(0,0,0,0.1);
+        }
+        @media (min-width: 768px) { .confetti-piece { width: 14px; height: 14px; } }
+        @keyframes confetti-fall {
+            0% { opacity: 1; top: -10px; transform: translateX(0) rotate(0deg); }
+            100% { opacity: 0; top: 100vh; transform: translateX(50px) rotate(720deg); }
+        }
+
+        /* --- EFECTOS EXTRAS NUEVOS --- */
+        @keyframes slide-up-fade {
+            0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .anim-slide-up { animation: slide-up-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .correct-screen-flash {
+            position: fixed; inset: 0; z-index: 8888; pointer-events: none;
+            background: radial-gradient(circle at center, transparent 10%, rgba(34, 197, 94, 0.5) 100%);
+            animation: green-glint 0.6s ease-out;
+        }
+        @keyframes green-glint {
+            0% { opacity: 0; transform: scale(0.95); }
+            20% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.05); }
+        }
+
+        /* --- HOJAS REALISTAS FLOTANTES (Fondo del juego) --- */
+        .eco-particles {
+            position: fixed; inset: 0; z-index: -8; pointer-events: none; overflow: hidden;
+        }
+        .realistic-leaf {
+            position: absolute;
+            animation: fall-realistic linear infinite;
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.2));
+            will-change: transform, opacity;
+        }
+        @keyframes fall-realistic {
+            0% { transform: translateY(-20vh) translateX(0) rotate3d(1, 1, 1, 0deg); opacity: 0; }
+            10% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(120vh) translateX(150px) rotate3d(1, 1, 1, 360deg); opacity: 0; }
+        }
+
+        /* --- ANIMACIONES DE LA SEMILLA A ÁRBOL REALISTA --- */
+        .tree-sway-container { animation: tree-sway 6s ease-in-out infinite alternate; transform-origin: center bottom; }
+        .leaf-wind { animation: leaf-rustle 4s ease-in-out infinite alternate; }
+        
+        @keyframes tree-sway {
+            0% { transform: rotate(-1deg) skewX(-1deg); }
+            100% { transform: rotate(1deg) skewX(1deg); }
+        }
+        @keyframes leaf-rustle {
+            0% { transform: skewX(-2deg) rotate(-2deg); }
+            100% { transform: skewX(2deg) rotate(2deg); }
+        }
+
+        /* Form Inputs */
+        .glass-input {
+            width: 100%; padding: 0.75rem 1rem; border-radius: 1rem;
+            background: rgba(255,255,255,0.8); border: 2px solid rgba(148,163,184,0.3);
+            color: #334155; font-weight: 600; transition: all 0.3s ease;
+            outline: none; font-family: 'Outfit', sans-serif;
+        }
+        .glass-input:focus {
+            background: white; border-color: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.2);
+        }
+        .glass-input::placeholder { color: #94a3b8; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- ICONOS SVG ---
+        const Icons = {
+            Home: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>,
+            Refresh: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>,
+            Play: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>,
+            User: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>,
+            Users: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>,
+            Clock: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>,
+            Volume2: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>,
+            VolumeX: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+        };
+
+        // --- URL DE GOOGLE APPS SCRIPT ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzb1W-UWbGege2h48SyX8fuXBI38l4RxmOG9fozFwHAa4U9Kr2RhE8oJLADH2jsseqY3A/exec";
+
+        // --- LINKS DE AUDIO ---
+        const AUDIO_URLS = {
+            bgMusic: "https://image2url.com/r2/default/audio/1772584447221-eed8d183-7806-46d7-b72a-02bb3e22e3c1.mp3", 
+            correct: "https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73467.mp3", 
+            wrong: "https://cdn.pixabay.com/audio/2021/08/04/audio_c6ccf3232f.mp3", 
+            timeUp: "https://cdn.pixabay.com/audio/2021/08/04/audio_c6ccf3232f.mp3", 
+            click: "https://cdn.pixabay.com/audio/2022/03/15/audio_788220a2e2.mp3",
+            select: "https://cdn.pixabay.com/audio/2022/03/24/audio_27ed2ba806.mp3",
+            win: "https://cdn.pixabay.com/audio/2021/08/04/audio_bb630cc098.mp3",
+            countdown: "https://cdn.pixabay.com/audio/2021/08/04/audio_0625c153e1.mp3",
+            playBtn: "https://cdn.pixabay.com/audio/2022/03/24/audio_9ec161dc22.mp3"
+        };
+
+        // --- BANCO DE 39 PREGUNTAS (MEDIO AMBIENTE) ---
+        const QUIZ_DATA = {
+            medioambiente: [
+                { q: "¿Cuál es el principal sumidero natural de carbono del planeta?", opts: ["Bosques tropicales", "Suelos agrícolas", "Océanos"], a: 2 },
+                { q: "¿Qué norma mexicana regula emisiones a la atmósfera de fuentes fijas?", opts: ["NOM-059-SEMARNAT", "NOM-085-SEMARNAT", "NOM-001-SEMARNAT"], a: 1 },
+                { q: "¿Qué es la huella hídrica azul?", opts: ["Agua de lluvia utilizada", "Agua superficial y subterránea consumida", "Agua reciclada"], a: 1 },
+                { q: "¿Qué instrumento define usos de suelo ambientalmente compatibles?", opts: ["Licencia ambiental", "Ordenamiento ecológico territorial", "Impacto acumulativo"], a: 1 },
+                { q: "¿Qué es resiliencia ecosistémica?", opts: ["Capacidad de adaptación y recuperación", "Crecimiento acelerado", "Disminución poblacional"], a: 0 },
+                { q: "¿Qué tipo de área protege ecosistemas con uso restringido?", opts: ["Parque industrial", "Área Natural Protegida", "Zona urbana"], a: 1 },
+                { q: "¿Qué es economía circular?", opts: ["Modelo lineal producción-consumo", "Reducir, reutilizar y reciclar", "Aumentar extracción"], a: 1 },
+                { q: "¿Qué proceso convierte residuos orgánicos en abono?", opts: ["Incineración", "Compostaje", "Pirólisis"], a: 1 },
+                { q: "¿Qué bioma almacena más carbono por hectárea?", opts: ["Selva tropical", "Manglar", "Desierto"], a: 1 },
+                { q: "¿Qué tecnología reduce emisiones en rellenos sanitarios?", opts: ["Captura de biogás", "Compactación", "Cloración"], a: 0 },
+                { q: "¿Qué contaminante genera lluvia ácida?", opts: ["SO₂ (Dióxido de azufre)", "O₂ (Oxígeno)", "Helio"], a: 0 },
+                { q: "¿Qué ecosistema es clave en protección costera en Rosarito?", opts: ["Manglar", "Dunas costeras", "Sabana"], a: 1 },
+                { q: "¿Qué instrumento regula descargas a cuerpos de agua en México?", opts: ["NOM-001-SEMARNAT", "NOM-059-SEMARNAT", "NOM-041-SEMARNAT"], a: 0 },
+                { q: "¿Qué es un residuo de manejo especial?", opts: ["Residuo doméstico común", "Residuo que requiere plan específico de manejo", "Residuo radiactivo"], a: 1 },
+                { q: "¿Qué gas se genera principalmente en rellenos sanitarios?", opts: ["Oxígeno", "Metano", "Argón"], a: 1 },
+                { q: "¿Qué instrumento internacional reconoce el acceso al agua como derecho humano?", opts: ["Asamblea General de Naciones Unidas", "Banco Mundial", "OCDE"], a: 0 },
+                { q: "¿Qué proceso elimina sólidos sedimentables en tratamiento primario?", opts: ["Filtración avanzada", "Sedimentación", "Cloración"], a: 1 },
+                { q: "¿En qué unidad se mide el ruido ambiental?", opts: ["Hertz", "Decibeles (dB)", "Newton"], a: 1 },
+                { q: "¿Qué instrumento mide niveles de ruido?", opts: ["Sonómetro", "Anemómetro", "Barómetro"], a: 0 },
+                { q: "¿Qué acción reduce islas de calor urbanas?", opts: ["Pavimentación masiva", "Reforestación urbana", "Más concreto"], a: 1 },
+                { q: "¿Qué color suele identificar residuos orgánicos?", opts: ["Verde", "Gris", "Negro"], a: 0 },
+                { q: "¿Qué implica jurídicamente reconocer a los animales como seres sintientes?", opts: ["Pueden ser considerados objetos", "Deben protegerse contra sufrimiento innecesario", "Tienen derechos políticos"], a: 1 },
+                { q: "¿Qué instrumento internacional establece estándares de bienestar animal?", opts: ["Organización Mundial de Sanidad Animal", "UNICEF", "OMC"], a: 0 },
+                { q: "¿Qué jerarquía prioriza la gestión integral de residuos?", opts: ["Reciclar-Reducir-Reutilizar", "Reducir-Reutilizar-Reciclar", "Enterrar-Reciclar-Reducir"], a: 1 },
+                { q: "¿Qué sector consume mayor volumen de agua a nivel nacional?", opts: ["Industrial", "Agrícola", "Comercial"], a: 1 },
+                { q: "¿Qué parámetro mide acidez o alcalinidad del agua?", opts: ["DQO", "pH", "Turbidez"], a: 1 },
+                { q: "¿Qué sector urbano aporta más CO₂ directo?", opts: ["Transporte", "Jardinería", "Comercio local"], a: 0 },
+                { q: "¿Qué es gobernanza ambiental?", opts: ["Decisión exclusiva del gobierno", "Participación coordinada gobierno-sociedad", "Regulación privada"], a: 1 },
+                { q: "¿Qué impacto tienen microplásticos en fauna?", opts: ["Digestión natural", "Bioacumulación", "Fertilización"], a: 1 },
+                { q: "¿Qué es resiliencia urbana?", opts: ["Capacidad de adaptación ante impactos ambientales", "Crecimiento sin límites", "Aumento demográfico"], a: 0 },
+                { q: "¿Qué efecto tiene quema de basura?", opts: ["Reduce contaminación", "Emite partículas y toxinas", "No genera impacto"], a: 1 },
+                { q: "¿Qué es infraestructura verde urbana?", opts: ["Obras de concreto pintadas de verde", "Red de espacios naturales para servicios ecosistémicos", "Plantas decorativas aisladas"], a: 1 },
+                { q: "¿Cuál es un ejemplo de infraestructura verde?", opts: ["Estacionamiento pavimentado", "Azotea verde", "Puente vehicular"], a: 1 },
+                { q: "La educación ambiental busca principalmente:", opts: ["Informar sin cambiar hábitos", "Generar conciencia y acción responsable", "Aplicar multas"], a: 1 },
+                { q: "¿Qué sector debe participar en educación ambiental?", opts: ["Solo gobierno", "Solo escuelas", "Gobierno, sociedad y sector privado"], a: 2 },
+                { q: "¿Qué práctica educativa promueve bienestar animal?", opts: ["Compra impulsiva", "Sensibilización sobre tenencia responsable", "Abandono"], a: 1 },
+                { q: "¿Qué indicador mide contaminación bacteriológica en playas?", opts: ["Coliformes fecales", "Salinidad", "Temperatura"], a: 0 },
+                { q: "¿Qué sector económico depende directamente de mares saludables en Rosarito?", opts: ["Turismo y pesca", "Minería", "Industria pesada"], a: 0 },
+                { q: "¿Qué acción ciudadana protege ecosistemas marinos?", opts: ["Tirar colillas en arena", "Reducir plásticos de un solo uso", "Alimentar fauna silvestre"], a: 1 }
+            ]
+        };
+
+        const QUESTIONS_PER_GAME = 15;
+
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // Confeti Ecológico
+        const Confetti = ({ amount = 100 }) => {
+            const confettiPieces = useMemo(() => {
+                return [...Array(amount)].map((_, i) => ({
+                    left: `${Math.random() * 100}%`,
+                    backgroundColor: ['#22c55e', '#16a34a', '#84cc16', '#eab308', '#0ea5e9', '#ffffff'][Math.floor(Math.random()*6)],
+                    animation: `confetti-fall ${1.5 + Math.random() * 2}s linear forwards`,
+                    animationDelay: `${Math.random() * 0.3}s`,
+                    transform: `rotate(${Math.random() * 360}deg)`
+                }));
+            }, [amount]);
+
+            return (
+                <div className="fixed inset-0 pointer-events-none overflow-hidden z-[8000]">
+                    {confettiPieces.map((style, i) => (
+                        <div key={i} className="confetti-piece" style={style} />
+                    ))}
+                </div>
+            );
+        };
+
+        // --- HOJAS REALISTAS FONDO ---
+        const RealisticLeaves = () => {
+            const leaves = useMemo(() => [...Array(20)].map((_, i) => ({
+                left: `${Math.random() * 100}%`,
+                animationDuration: `${10 + Math.random() * 15}s`,
+                animationDelay: `-${Math.random() * 20}s`,
+                width: `${25 + Math.random() * 20}px`,
+                height: `${25 + Math.random() * 20}px`,
+                color: ['#16a34a', '#22c55e', '#65a30d', '#4ade80'][Math.floor(Math.random() * 4)],
+                type: Math.floor(Math.random() * 2) 
+            })), []);
+            
+            return (
+                <div className="eco-particles">
+                    {leaves.map((style, i) => (
+                        <div key={i} className="realistic-leaf" style={{...style}}>
+                            <svg viewBox="0 0 100 100" fill={style.color} width="100%" height="100%">
+                                {style.type === 0 ? (
+                                    <>
+                                        <path d="M50,5 C30,30 20,50 20,70 C20,90 40,95 50,100 C60,95 80,90 80,70 C80,50 70,30 50,5 Z"/>
+                                        <path d="M50,5 L50,100 M50,40 L30,25 M50,60 L70,45 M50,80 L30,65" stroke="rgba(0,0,0,0.15)" strokeWidth="3" fill="none"/>
+                                    </>
+                                ) : (
+                                    <>
+                                        <path d="M20,10 C40,10 60,30 70,50 C80,70 90,90 90,90 C90,90 70,80 50,70 C30,60 10,40 10,20 C10,10 20,10 20,10 Z"/>
+                                        <path d="M20,10 L90,90 M40,30 L60,20 M55,45 L75,35 M70,60 L90,50" stroke="rgba(0,0,0,0.15)" strokeWidth="3" fill="none"/>
+                                    </>
+                                )}
+                            </svg>
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        // --- COMPONENTE: DE SEMILLA A ÁRBOL REALISTA ---
+        // Genera un árbol de tamaño perfecto ("no tan grande") con hojas que rompen bordes para parecer reales.
+        const SeedToTreeRealistic = ({ progress }) => {
+            // Mapeo exacto de las fases del tiempo (0-100)
+            const pSeed = Math.min(100, progress * 6); // 0-16%
+            const pRoots = Math.max(0, Math.min(100, (progress - 12) * 4)); // 12-37%
+            const pTrunk = Math.max(0, Math.min(100, (progress - 25) * 3)); // 25-58%
+            const pLeaves = Math.max(0, Math.min(100, (progress - 45) * 3)); // 45-78%
+            const pGlow = Math.max(0, Math.min(100, (progress - 65) * 3)); // 65-100%
+
+            // Subcomponente para los racimos de hojas
+            const FoliageCluster = ({ cx, cy, rx, ry, fill, delay }) => {
+                const growth = Math.max(0, Math.min(1, (pLeaves - delay) / (100 - delay)));
+                return (
+                    <g className="leaf-wind" style={{transformOrigin: `${cx}px ${cy}px`}}>
+                        <ellipse 
+                            cx={cx} cy={cy} rx={rx} ry={ry} fill={fill} 
+                            style={{ 
+                                transform: `scale(${growth})`, 
+                                transformOrigin: `${cx}px ${cy}px`, 
+                                transition: 'transform 0.1s linear' 
+                            }} 
+                        />
+                    </g>
+                );
+            };
+
+            return (
+                <svg viewBox="0 0 400 400" className="w-full h-full overflow-visible drop-shadow-[0_20px_20px_rgba(0,0,0,0.3)]">
+                    <defs>
+                        {/* Textura hiperrealista para la madera */}
+                        <filter id="bark">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.1 0.4" numOctaves="3" result="noise"/>
+                            <feColorMatrix type="matrix" values="1 0 0 0 0  0 0.8 0 0 0  0 0.5 0 0 0  0 0 0 0.4 0" in="noise" result="coloredNoise"/>
+                            <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="texture"/>
+                            <feBlend mode="multiply" in="texture" in2="SourceGraphic"/>
+                        </filter>
+                        
+                        {/* Filtro fractal para hacer que las hojas se vean irregulares, desordenadas y orgánicas */}
+                        <filter id="realisticFoliage" x="-50%" y="-50%" width="200%" height="200%">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="4" result="noise"/>
+                            <feDisplacementMap in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+                            <feDropShadow dx="2" dy="6" stdDeviation="4" floodColor="#000" floodOpacity="0.4"/>
+                        </filter>
+
+                        <linearGradient id="woodGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#29150b" />
+                            <stop offset="50%" stopColor="#5c341c" />
+                            <stop offset="100%" stopColor="#1a0d06" />
+                        </linearGradient>
+
+                        <radialGradient id="leafVolDark" cx="40%" cy="30%" r="60%">
+                            <stop offset="0%" stopColor="#16a34a" />
+                            <stop offset="60%" stopColor="#14532d" />
+                            <stop offset="100%" stopColor="#022c22" />
+                        </radialGradient>
+                        
+                        <radialGradient id="leafVolBright" cx="40%" cy="30%" r="60%">
+                            <stop offset="0%" stopColor="#4ade80" />
+                            <stop offset="50%" stopColor="#16a34a" />
+                            <stop offset="100%" stopColor="#064e3b" />
+                        </radialGradient>
+
+                        <radialGradient id="sunAura" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="rgba(253, 224, 71, 0.4)" />
+                            <stop offset="100%" stopColor="rgba(253, 224, 71, 0)" />
+                        </radialGradient>
+
+                        <clipPath id="trunkClip">
+                            <rect x="0" y={320 - (pTrunk * 3.2)} width="400" height={pTrunk * 3.2} />
+                        </clipPath>
+                    </defs>
+
+                    {/* El Sol y el Aura (Amanecer detrás del árbol) */}
+                    <circle cx="200" cy="200" r="180" fill="url(#sunAura)"
+                            style={{ 
+                                opacity: pGlow/100, 
+                                transform: `scale(${0.5 + (pGlow/200)})`, 
+                                transformOrigin: '200px 200px',
+                                transition: 'all 0.5s linear' 
+                            }} />
+
+                    {/* Tierra / Suelo */}
+                    <ellipse cx="200" cy="320" rx="120" ry="20" fill="rgba(0,0,0,0.3)" />
+                    <ellipse cx="200" cy="325" rx="70" ry="12" fill="#292524" />
+
+                    <g className="tree-sway-container">
+                        
+                        {/* FASE 1: La Semilla que Cae y Brilla */}
+                        <g transform={`translate(200, ${150 + (pSeed/100)*170}) scale(${pSeed > 10 ? 1 : pSeed/10})`} 
+                           style={{ opacity: pTrunk > 20 ? 1 - (pTrunk/100) : 1 }}>
+                            <path d="M -8 -4 C -8 12, 8 12, 8 -4 Z" fill="#b45309" />
+                            <path d="M -12 -4 Q 0 -12 12 -4 Q 0 0 -12 -4 Z" fill="#78350f" />
+                            <circle cx="0" cy="0" r="15" fill="rgba(134, 239, 172, 0.6)" opacity={pSeed > 90 ? 1 : Math.sin(pSeed*0.2)} />
+                        </g>
+
+                        {/* FASE 2: Raíces que se expanden */}
+                        <g stroke="#3e2723" strokeWidth="4" strokeLinecap="round" fill="none">
+                            <path d="M 200 320 C 190 330, 160 360, 130 380" strokeDasharray="100" strokeDashoffset={100 - pRoots} />
+                            <path d="M 200 320 C 210 340, 240 370, 280 390" strokeDasharray="100" strokeDashoffset={100 - pRoots} />
+                            <path d="M 200 320 C 195 340, 190 380, 180 400" strokeDasharray="100" strokeDashoffset={100 - pRoots} />
+                            <path d="M 200 320 C 215 350, 220 380, 230 410" strokeDasharray="100" strokeDashoffset={100 - pRoots} />
+                        </g>
+
+                        {/* FASE 3: Tronco y Ramas (Aparecen con clipPath hacia arriba) */}
+                        <g clipPath="url(#trunkClip)" stroke="url(#woodGrad)" fill="none" strokeLinecap="round" filter="url(#bark)">
+                            {/* Tronco Principal Grueso */}
+                            <path d="M 200 330 C 200 270, 195 220, 195 180" strokeWidth="24" />
+                            
+                            {/* Ramas Izquierdas */}
+                            <path d="M 195 220 C 170 180, 130 160, 90 140" strokeWidth="14" />
+                            <path d="M 130 160 C 110 130, 90 110, 70 90" strokeWidth="8" />
+                            <path d="M 110 148 C 100 130, 80 125, 60 120" strokeWidth="6" />
+
+                            {/* Ramas Derechas */}
+                            <path d="M 195 200 C 230 170, 270 150, 310 130" strokeWidth="16" />
+                            <path d="M 250 160 C 280 130, 300 100, 320 80" strokeWidth="10" />
+                            <path d="M 290 142 C 310 130, 330 120, 350 110" strokeWidth="6" />
+
+                            {/* Rama Central/Top */}
+                            <path d="M 195 180 C 180 140, 190 100, 200 60" strokeWidth="12" />
+                            <path d="M 190 120 C 160 90, 140 70, 130 50" strokeWidth="8" />
+                            <path d="M 200 100 C 220 80, 240 60, 260 40" strokeWidth="8" />
+                        </g>
+
+                        {/* FASE 4: Follaje Volumétrico con Filtro Realista */}
+                        <g filter="url(#realisticFoliage)">
+                            {/* Capa de Sombras (Hojas oscuras al fondo) */}
+                            <FoliageCluster cx="90" cy="140" rx="45" ry="30" fill="url(#leafVolDark)" delay={0} pLeaves={pLeaves} />
+                            <FoliageCluster cx="310" cy="130" rx="50" ry="35" fill="url(#leafVolDark)" delay={5} pLeaves={pLeaves} />
+                            <FoliageCluster cx="200" cy="130" rx="80" ry="60" fill="url(#leafVolDark)" delay={10} pLeaves={pLeaves} />
+                            
+                            {/* Capa Media (Hojas de luz media) */}
+                            <FoliageCluster cx="120" cy="110" rx="60" ry="40" fill="url(#leafVolBright)" delay={15} pLeaves={pLeaves} />
+                            <FoliageCluster cx="280" cy="110" rx="60" ry="40" fill="url(#leafVolBright)" delay={20} pLeaves={pLeaves} />
+                            <FoliageCluster cx="70" cy="90" rx="40" ry="25" fill="url(#leafVolBright)" delay={25} pLeaves={pLeaves} />
+                            <FoliageCluster cx="320" cy="80" rx="45" ry="30" fill="url(#leafVolBright)" delay={30} pLeaves={pLeaves} />
+
+                            {/* Capa Frontal (Luces altas y top del árbol) */}
+                            <FoliageCluster cx="200" cy="60" rx="70" ry="50" fill="url(#leafVolBright)" delay={35} pLeaves={pLeaves} />
+                            <FoliageCluster cx="140" cy="60" rx="40" ry="30" fill="url(#leafVolBright)" delay={45} pLeaves={pLeaves} />
+                            <FoliageCluster cx="250" cy="50" rx="45" ry="30" fill="url(#leafVolBright)" delay={50} pLeaves={pLeaves} />
+                        </g>
+                    </g>
+                </svg>
+            );
+        };
+
+        // --- APP PRINCIPAL ---
+        function App() {
+            const [isLoading, setIsLoading] = useState(true);
+            const [loadingProgress, setLoadingProgress] = useState(0); 
+            const [loadingText, setLoadingText] = useState("PLANTANDO SEMILLAS...");
+            const [gameState, setGameState] = useState('menu'); 
+            const [numPlayers, setNumPlayers] = useState(1);
+            const [currentPlayer, setCurrentPlayer] = useState(1);
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [scores, setScores] = useState({ 1: 0, 2: 0 });
+            const [timeLeft, setTimeLeft] = useState(100);
+            const [countdown, setCountdown] = useState(3);
+            const [selectedOption, setSelectedOption] = useState(null);
+            
+            // Estado para el Registro
+            const [isRegistered, setIsRegistered] = useState(false);
+            const [isSubmitting, setIsSubmitting] = useState(false);
+            const [formData, setFormData] = useState({
+                nombre: '', correo: '', ciudad: '', telefono: '', organismo: ''
+            });
+
+            // Efectos
+            const [showConfetti, setShowConfetti] = useState(false);
+            const [shake, setShake] = useState(false);
+            const [wrongFlash, setWrongFlash] = useState(false);
+            const [timeUpAnim, setTimeUpAnim] = useState(false);
+            const [isMuted, setIsMuted] = useState(false);
+
+            const [gameQuestions, setGameQuestions] = useState([]);
+            const advanceTurnRef = useRef();
+
+            // Sincronizar estado de mute
+            useEffect(() => {
+                const audios = document.querySelectorAll('.game-audio');
+                audios.forEach(a => { a.muted = isMuted; });
+            }, [isMuted]);
+
+            const startMusic = () => {
+                if (!isMuted) {
+                    const bgm = document.getElementById('sfx-bgMusic');
+                    if (bgm && bgm.paused) {
+                        bgm.volume = 0.1;
+                        bgm.play().catch(e => console.log("Música en espera."));
+                    }
+                }
+            };
+
+            const playSound = (type) => {
+                if (isMuted) return;
+                try {
+                    const audioEl = document.getElementById(`sfx-${type}`);
+                    if (audioEl) {
+                        audioEl.pause();
+                        audioEl.currentTime = 0;
+                        audioEl.volume = 1.0;
+                        const playPromise = audioEl.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(e => console.log("SFX error capturado", e));
+                        }
+                    }
+                } catch(e) {}
+            };
+
+            const toggleMute = (e) => {
+                e.stopPropagation(); 
+                const newMuted = !isMuted;
+                setIsMuted(newMuted);
+                
+                const audios = document.querySelectorAll('.game-audio');
+                audios.forEach(a => { a.muted = newMuted; });
+
+                if (!newMuted) {
+                    setTimeout(() => playSound('click'), 50); 
+                    const bgm = document.getElementById('sfx-bgMusic');
+                    if (bgm) {
+                        bgm.volume = 0.1;
+                        bgm.play().catch(e=>{});
+                    }
+                } else {
+                    const bgm = document.getElementById('sfx-bgMusic');
+                    if (bgm) bgm.pause();
+                }
+            };
+
+            // LOGICA DE CARGA CON TIEMPO DE 7 SEGUNDOS
+            useEffect(() => {
+                const userRegistered = localStorage.getItem('trivia_user_registered') === 'true';
+                setIsRegistered(userRegistered);
+
+                const totalDuration = 7000;
+                const updateInterval = 50;
+                let elapsed = 0;
+
+                const progressTimer = setInterval(() => {
+                    elapsed += updateInterval;
+                    const percent = Math.min(100, Math.floor((elapsed / totalDuration) * 100));
+                    setLoadingProgress(percent);
+
+                    if (percent < 30) setLoadingText("PLANTANDO SEMILLAS...");
+                    else if (percent < 60) setLoadingText("REGANDO IDEAS...");
+                    else if (percent < 90) setLoadingText("CUIDANDO EL PLANETA...");
+                    else setLoadingText("¡TODO LISTO!");
+
+                    if (elapsed >= totalDuration) {
+                        clearInterval(progressTimer);
+                        setIsLoading(false);
+                        setGameState(userRegistered ? 'menu' : 'register');
+                    }
+                }, updateInterval);
+                
+                return () => clearInterval(progressTimer);
+            }, []);
+
+            // Efecto Fuerte de Error + Vibración
+            const triggerWrongEffect = () => {
+                setShake(true);
+                setWrongFlash(true);
+                if (navigator.vibrate) {
+                    try { navigator.vibrate(200); } catch (e) {} 
+                }
+                setTimeout(() => setWrongFlash(false), 500); 
+            };
+
+            const resetTurn = () => { 
+                setSelectedOption(null); 
+                setTimeLeft(100); 
+                setShowConfetti(false); 
+                setShake(false); 
+                setTimeUpAnim(false);
+            };
+
+            // Avanzar turno
+            advanceTurnRef.current = () => {
+                let nextPlayer = currentPlayer;
+                let nextIndex = currentQIndex;
+                if (numPlayers === 2) {
+                    nextPlayer = currentPlayer === 1 ? 2 : 1;
+                    if (currentPlayer === 2) nextIndex++;
+                } else {
+                    nextIndex++;
+                }
+
+                if (nextIndex >= gameQuestions.length) {
+                    setTimeUpAnim(false);
+                    setWrongFlash(false);
+                    setShake(false);
+                    setSelectedOption(null);
+                    setShowConfetti(true);
+                    setGameState('result');
+                    playSound('win'); 
+                } else {
+                    setCurrentPlayer(nextPlayer);
+                    setCurrentQIndex(nextIndex);
+                    resetTurn();
+                }
+            };
+
+            // TIMER
+            useEffect(() => {
+                let timer;
+                if (gameState === 'playing' && selectedOption === null && !timeUpAnim && timeLeft > 0) {
+                    timer = setInterval(() => {
+                        setTimeLeft(prev => prev - 0.5);
+                    }, 50);
+                }
+                return () => clearInterval(timer);
+            }, [gameState, selectedOption, timeLeft, timeUpAnim]);
+
+            // EFECTO DE TIME UP
+            useEffect(() => {
+                if (gameState === 'playing' && timeLeft <= 0 && selectedOption === null && !timeUpAnim) {
+                    setTimeUpAnim(true);
+                    playSound('timeUp');
+                    triggerWrongEffect();
+                    setTimeout(() => {
+                        if(advanceTurnRef.current) advanceTurnRef.current();
+                    }, 2500); 
+                }
+            }, [timeLeft, gameState, selectedOption, timeUpAnim]);
+
+            // Countdown Logic
+            useEffect(() => {
+                let interval;
+                if (gameState === 'countdown') {
+                    playSound('countdown'); 
+                    interval = setInterval(() => {
+                        setCountdown(prev => {
+                            if (prev === 1) {
+                                setTimeout(() => { setGameState('playing'); resetTurn(); }, 600);
+                                playSound('select');
+                                return "GO!";
+                            }
+                            playSound('countdown'); 
+                            return typeof prev === 'number' ? prev - 1 : prev;
+                        });
+                    }, 1000);
+                }
+                return () => clearInterval(interval);
+            }, [gameState]);
+
+            const goToMenu = () => { 
+                playSound('click');
+                setGameState('menu'); 
+                setScores({1:0, 2:0}); 
+            };
+
+            // Registro
+            const handleRegisterSubmit = async (e) => {
+                e.preventDefault();
+                playSound('select');
+                setIsSubmitting(true);
+
+                const urlParams = new URLSearchParams();
+                urlParams.append("nombre", formData.nombre);
+                urlParams.append("correo", formData.correo);
+                urlParams.append("ciudad", formData.ciudad);
+                urlParams.append("telefono", formData.telefono);
+                urlParams.append("organismo", formData.organismo);
+
+                try {
+                    if (SCRIPT_URL) {
+                        await fetch(SCRIPT_URL, {
+                            method: "POST",
+                            body: urlParams,
+                            headers: { "Content-Type": "application/x-www-form-urlencoded" }
+                        });
+                    }
+                    localStorage.setItem('trivia_user_registered', 'true');
+                    setIsRegistered(true);
+                    playSound('win');
+                    setGameState('menu');
+
+                } catch (error) {
+                    console.error("Error al registrar:", error);
+                    localStorage.setItem('trivia_user_registered', 'true');
+                    setIsRegistered(true);
+                    setGameState('menu');
+                } finally {
+                    setIsSubmitting(false);
+                }
+            };
+
+            const handleInputChange = (e) => {
+                setFormData({ ...formData, [e.target.name]: e.target.value });
+            };
+
+            // Barajar array
+            const shuffleArray = (array) => {
+                let newArr = [...array];
+                for (let i = newArr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+                }
+                return newArr;
+            };
+
+            // INICIAR JUEGO
+            const startGame = (p) => { 
+                startMusic(); 
+                playSound('select');
+                setNumPlayers(p); 
+                setScores({1:0, 2:0}); 
+                setCurrentPlayer(1); 
+                setCurrentQIndex(0); 
+
+                // Usamos la categoría de medioambiente y tomamos 15 preguntas
+                const shuffledQuestions = shuffleArray(QUIZ_DATA.medioambiente).slice(0, QUESTIONS_PER_GAME).map(q => {
+                    const mappedOpts = q.opts.map((opt, idx) => ({ opt, isCorrect: idx === q.a }));
+                    const shuffledOpts = shuffleArray(mappedOpts);
+                    return {
+                        q: q.q,
+                        opts: shuffledOpts.map(o => o.opt),
+                        a: shuffledOpts.findIndex(o => o.isCorrect)
+                    };
+                });
+                
+                setGameQuestions(shuffledQuestions);
+
+                setCountdown(3); 
+                setGameState('countdown'); 
+            };
+
+            const handleAnswer = (index) => {
+                if (selectedOption !== null || timeUpAnim) return; 
+                setSelectedOption(index);
+                
+                const currentQ = gameQuestions[currentQIndex];
+                const isCorrect = index === currentQ.a;
+
+                if (isCorrect) {
+                    playSound('correct');
+                    setScores(prev => ({ ...prev, [currentPlayer]: prev[currentPlayer] + 100 + Math.ceil(timeLeft) }));
+                    setShowConfetti(true);
+                } else {
+                    playSound('wrong');
+                    triggerWrongEffect();
+                }
+                
+                setTimeout(() => {
+                    if (advanceTurnRef.current) advanceTurnRef.current();
+                }, 1500);
+            };
+
+            // VISTAS
+            const renderView = () => {
+                if (isLoading) {
+                    return (
+                        <div className="flex flex-col items-center z-20 w-full px-4 text-center">
+                            
+                            {/* EL NUEVO ÁRBOL REALISTA: "No tan grande" (w-56 a w-72) */}
+                            <div className="relative mb-8 flex justify-center items-center w-56 h-56 md:w-72 md:h-72">
+                                <SeedToTreeRealistic progress={loadingProgress} />
+                            </div>
+
+                            <div className="loading-bar-container mb-4 border-white">
+                                <div className="loading-bar-fill" style={{width: `${loadingProgress}%`}}></div>
+                            </div>
+                            <div className="flex flex-col items-center w-full max-w-[350px] mt-2">
+                                <span className="text-lg md:text-xl font-bold text-slate-800 tracking-widest font-display animate-pulse drop-shadow-sm">{loadingText}</span>
+                                <span className="text-3xl md:text-4xl font-black text-slate-900 mt-1 drop-shadow-md">{loadingProgress}%</span>
+                            </div>
+                        </div>
+                    );
+                }
+
+                if (gameState === 'register') {
+                    return (
+                        <div className="flex flex-col items-center z-10 anim-enter w-full px-4 max-w-lg mx-auto py-8">
+                            <div className="card-glass p-6 sm:p-8 md:p-10 w-full text-left bg-white/90">
+                                <div className="flex items-center gap-3 mb-6 border-b-2 border-green-200 pb-4">
+                                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-2 rounded-xl text-white shadow-md">
+                                        <Icons.User size={28} />
+                                    </div>
+                                    <h2 className="text-2xl sm:text-3xl font-display font-black text-slate-800">REGISTRO ÉPICO</h2>
+                                </div>
+                                <p className="text-sm sm:text-base text-slate-500 font-bold mb-6">Regístrate una sola vez para desbloquear el juego para siempre.</p>
+                                
+                                <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 ml-1">Nombre Completo <span className="text-red-500">*</span></label>
+                                        <input type="text" name="nombre" required value={formData.nombre} onChange={handleInputChange} className="glass-input" placeholder="Ej. Juan Pérez" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 ml-1">Correo Electrónico <span className="text-red-500">*</span></label>
+                                        <input type="email" name="correo" required value={formData.correo} onChange={handleInputChange} className="glass-input" placeholder="tu@correo.com" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 ml-1">Ciudad <span className="text-red-500">*</span></label>
+                                        <input type="text" name="ciudad" required value={formData.ciudad} onChange={handleInputChange} className="glass-input" placeholder="Ej. Madrid" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 ml-1">Teléfono <span className="text-slate-400 font-normal">(Opcional)</span></label>
+                                        <input type="tel" name="telefono" value={formData.telefono} onChange={handleInputChange} className="glass-input" placeholder="Ej. 555 123 4567" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 ml-1">Organismo <span className="text-slate-400 font-normal">(Escuela/Empresa)</span></label>
+                                        <input type="text" name="organismo" value={formData.organismo} onChange={handleInputChange} className="glass-input" placeholder="Ej. Universidad XYZ" />
+                                    </div>
+
+                                    <button type="submit" disabled={isSubmitting} className="btn-eco-main mt-4 text-lg sm:text-xl py-4 flex justify-center items-center gap-3 shadow-xl hover-shine-effect w-full disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed">
+                                        {isSubmitting ? (
+                                            <span className="animate-pulse">GUARDANDO...</span>
+                                        ) : (
+                                            <><Icons.Play size={24} /> GUARDAR Y JUGAR</>
+                                        )}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    );
+                }
+
+                if (gameState === 'menu') {
+                    return (
+                        <div className="flex flex-col items-center z-10 anim-enter w-full px-4 max-w-7xl mx-auto">
+                            <h1 className="text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-display font-black text-transparent bg-clip-text text-eco mb-2 md:mb-4 tracking-tighter drop-shadow-sm anim-title-breathe text-center leading-none">
+                            TRIVIA
+                            </h1>
+                            <div className="bg-white/80 backdrop-blur-sm px-4 py-2 md:px-8 md:py-2 rounded-full shadow-sm border border-white/50 transform rotate-2 hover:rotate-0 transition-all duration-500 hover:scale-110 mb-6 md:mb-8 cursor-pointer anim-dynamic-float" style={{animationDelay: "0.5s"}}>
+                                <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-slate-800 tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-400 text-center animate-pulse drop-shadow-[0_0_15px_rgba(16,185,129,0.6)]">
+                                    MEDIOAMBIENTE
+                                </h2>
+                            </div>
+                            <div className="main-logo-container">
+                                <img src="https://images4.imagebam.com/e1/2a/5d/ME163P2M_o.png" alt="Empresa" className="main-logo-img" />
+                            </div>
+                            <div className="watermark-container">
+                                <img src="https://images4.imagebam.com/6d/71/09/ME1A51I1_o.png" alt="Socios" className="watermark-img" />
+                            </div>
+                            <button onClick={() => { playSound('playBtn'); setGameState('selection_popup'); }} 
+                                className="btn-eco-main text-xl sm:text-2xl md:text-3xl px-10 py-4 sm:px-16 sm:py-6 rounded-full flex items-center gap-3 sm:gap-4 mt-8 sm:mt-12 md:mt-16 hover:shadow-2xl hover:scale-110 transition-transform hover-shine-effect">
+                                <Icons.Play size={32} className="w-6 h-6 sm:w-8 sm:h-8" /> JUGAR AHORA
+                            </button>
+                        </div>
+                    );
+                }
+
+                if (gameState === 'selection_popup') {
+                    return (
+                        <div className="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-[5000] p-4 backdrop-blur-md anim-enter overflow-y-auto">
+                            <div className="card-glass p-8 md:p-12 text-center w-full max-w-lg shadow-2xl bg-white border-2 border-white my-8">
+                                <h2 className="text-3xl md:text-4xl font-display font-black text-slate-800 mb-8 md:mb-10">JUGADORES</h2>
+                                <div className="grid gap-4 md:gap-6">
+                                    <button onClick={() => startGame(1)} className="p-4 md:p-6 text-xl md:text-2xl font-bold text-slate-700 border-4 border-transparent hover:border-green-300 flex justify-center items-center gap-3 md:gap-4 bg-slate-50 hover:bg-green-50 hover:scale-105 transition-all rounded-2xl md:rounded-3xl hover-shine-effect">
+                                        <div className="bg-green-100 p-2 rounded-xl text-green-600"><Icons.User size={28} className="w-6 h-6 md:w-7 md:h-7" /></div>
+                                        1 JUGADOR
+                                    </button>
+                                    <button onClick={() => startGame(2)} className="p-4 md:p-6 text-xl md:text-2xl font-bold text-slate-700 border-4 border-transparent hover:border-emerald-300 flex justify-center items-center gap-3 md:gap-4 bg-slate-50 hover:bg-emerald-50 hover:scale-105 transition-all rounded-2xl md:rounded-3xl hover-shine-effect">
+                                        <div className="bg-emerald-100 p-2 rounded-xl text-emerald-600"><Icons.Users size={28} className="w-6 h-6 md:w-7 md:h-7" /></div>
+                                        2 JUGADORES
+                                    </button>
+                                </div>
+                                <button onClick={() => { playSound('click'); setGameState('menu'); }} className="mt-8 md:mt-10 text-sm md:text-base font-bold text-slate-400 hover:text-red-500 uppercase tracking-widest transition-colors py-2 px-4">CANCELAR</button>
+                            </div>
+                        </div>
+                    );
+                }
+
+                if (gameState === 'countdown') {
+                    return (
+                        <div key={countdown} className="anim-countdown-pop text-[8rem] sm:text-[12rem] md:text-[15rem] font-display font-black text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] z-50">
+                            {countdown}
+                        </div>
+                    );
+                }
+
+                if (gameState === 'playing') {
+                    const currentQ = gameQuestions[currentQIndex];
+                    return (
+                        <div key={`q-${currentQIndex}`} className="flex flex-col items-center w-full max-w-4xl z-10 relative px-2 anim-slide-up">
+                            <div className="flex justify-between w-full mb-4 md:mb-8 items-end gap-2 md:gap-4">
+                                <div className={`card-glass flex-1 px-2 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 flex flex-col items-center transition-all duration-300 ${currentPlayer===1 ? 'border-b-[6px] md:border-b-8 border-green-500 scale-105 bg-white shadow-xl' : 'opacity-60 scale-95'}`}>
+                                    <span className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-400 uppercase tracking-widest mb-1 text-center">JUGADOR 1</span>
+                                    <span className="text-xl sm:text-3xl md:text-4xl font-display font-black text-slate-800">{scores[1]}</span>
+                                </div>
+                                {numPlayers === 2 && (
+                                    <div className={`card-glass flex-1 px-2 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 flex flex-col items-center transition-all duration-300 ${currentPlayer===2 ? 'border-b-[6px] md:border-b-8 border-emerald-500 scale-105 bg-white shadow-xl' : 'opacity-60 scale-95'}`}>
+                                        <span className="text-[10px] sm:text-xs md:text-sm font-bold text-slate-400 uppercase tracking-widest mb-1 text-center">JUGADOR 2</span>
+                                        <span className="text-xl sm:text-3xl md:text-4xl font-display font-black text-slate-800">{scores[2]}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className={`card-glass anim-dynamic-float p-4 sm:p-8 md:p-12 w-full mb-4 md:mb-8 relative border-b-4 md:border-b-8 border-slate-200 ${timeUpAnim ? 'anim-glitch border-red-500' : ''}`}>
+                                <div className="flex justify-between items-center mb-3 md:mb-6">
+                                    <span className="bg-gradient-to-r from-emerald-600 to-green-500 text-white px-2 py-1 md:px-4 md:py-2 rounded-full text-[10px] md:text-sm font-bold uppercase tracking-wide shadow-md transform -rotate-2">
+                                        Pregunta {currentQIndex+1} / {QUESTIONS_PER_GAME}
+                                    </span>
+                                    <div className={`flex items-center gap-1 md:gap-2 font-display text-lg sm:text-2xl md:text-3xl font-bold ${timeLeft < 30 ? 'text-red-500 animate-pulse' : 'text-slate-700'}`}>
+                                        <Icons.Clock size={28} className={`w-4 h-4 sm:w-6 sm:h-6 md:w-7 md:h-7 ${timeLeft < 30 ? 'text-red-500' : 'text-slate-400'}`} /> 
+                                        {timeUpAnim ? "0" : Math.ceil(timeLeft)}
+                                    </div>
+                                </div>
+                                
+                                <h2 className={`text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold text-center mb-4 md:mb-8 pb-2 md:pb-6 leading-snug drop-shadow-sm ${timeUpAnim ? 'text-red-600' : 'text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-emerald-900'}`}>
+                                    {timeUpAnim ? "¡TIEMPO AGOTADO!" : currentQ.q}
+                                </h2>
+                                
+                                <div className="h-2 md:h-4 bg-slate-200 rounded-full overflow-hidden w-full shadow-inner border border-slate-300">
+                                    <div className={`h-full bg-gradient-to-r ${timeUpAnim ? 'from-red-600 to-red-900' : 'from-green-400 via-yellow-400 to-red-500'}`} style={{width: `${timeLeft}%`, transition: 'width 0.1s linear'}}></div>
+                                </div>
+                            </div>
+
+                            <div className="grid gap-2 sm:gap-4 md:gap-5 w-full pb-4">
+                                {currentQ.opts.map((opt, idx) => {
+                                    let statusClass = `opt-${idx % 3}`; 
+                                    
+                                    if (selectedOption !== null) {
+                                        if (idx === currentQ.a) statusClass = "correct-epic";
+                                        else if (idx === selectedOption) statusClass = "wrong-epic";
+                                        else statusClass = "opacity-40 grayscale";
+                                    } else if (timeUpAnim) {
+                                        if (idx === currentQ.a) statusClass = "highlight-epic-reveal";
+                                        else statusClass = "opacity-30 grayscale scale-95 border-transparent";
+                                    }
+
+                                    return (
+                                        <button key={idx} onClick={() => handleAnswer(idx)} disabled={selectedOption !== null || timeUpAnim}
+                                            className={`btn-option-ludic hover-shine-effect p-3 sm:p-5 md:p-6 text-sm sm:text-lg md:text-2xl text-left flex items-center gap-2 sm:gap-4 md:gap-6 ${statusClass}`}>
+                                            <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 shrink-0 rounded-full flex items-center justify-center font-black text-base sm:text-lg md:text-xl shadow-sm transition-colors border-2 bg-white/40 border-current`}>
+                                                {idx+1}
+                                            </div>
+                                            <span className="leading-tight pb-1 font-bold w-full">{opt}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    );
+                }
+
+                if (gameState === 'result') {
+                    const winner = numPlayers === 2 ? (scores[1] > scores[2] ? 1 : scores[2] > scores[1] ? 2 : 0) : 1;
+                    return (
+                        <div className="flex flex-col items-center w-full z-10 relative px-4 anim-slide-up">
+                            <div className="sunburst-win"></div>
+                            
+                            <div className="card-glass anim-dynamic-float p-8 sm:p-12 md:p-16 w-full max-w-3xl relative text-center mt-12 sm:mt-16 bg-white hover:scale-105 transition-transform duration-500 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+                                
+                                <h2 className="text-4xl sm:text-5xl md:text-7xl font-display font-black mt-4 sm:mt-6 mb-4 text-transparent bg-clip-text text-eco uppercase drop-shadow-sm">
+                                    {numPlayers === 1 ? "¡PARTIDA COMPLETADA!" : (winner === 0 ? "¡EMPATE ÉPICO!" : `¡GANA JUGADOR ${winner}!`)}
+                                </h2>
+
+                                <p className="text-slate-500 font-bold tracking-widest uppercase mb-8 md:mb-10 text-base md:text-xl">Respondiste {QUESTIONS_PER_GAME} preguntas</p>
+
+                                <div className="flex flex-col sm:flex-row justify-center gap-6 sm:gap-8 md:gap-16 mb-8 md:mb-12">
+                                    <div className={`flex flex-col items-center p-6 md:p-8 rounded-3xl ${winner === 1 ? 'bg-green-50 border-4 border-green-300 scale-110 shadow-lg' : 'bg-slate-50 border-2 border-slate-200'}`}>
+                                        <span className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">JUGADOR 1</span>
+                                        <span className="text-5xl sm:text-6xl md:text-7xl font-display font-black text-slate-800">{scores[1]}</span>
+                                    </div>
+                                    {numPlayers === 2 && (
+                                        <div className={`flex flex-col items-center p-6 md:p-8 rounded-3xl ${winner === 2 ? 'bg-emerald-50 border-4 border-emerald-300 scale-110 shadow-lg' : 'bg-slate-50 border-2 border-slate-200'}`}>
+                                            <span className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">JUGADOR 2</span>
+                                            <span className="text-5xl sm:text-6xl md:text-7xl font-display font-black text-slate-800">{scores[2]}</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="grid gap-4 md:gap-5 w-full max-w-sm mx-auto">
+                                    <button onClick={() => { playSound('select'); startGame(numPlayers); }} className="btn-eco-main hover-shine-effect text-xl sm:text-2xl py-4 sm:py-6 flex justify-center items-center gap-3 md:gap-4 shadow-xl">
+                                        <Icons.Play size={28} className="w-6 h-6 sm:w-7 sm:h-7" /> JUGAR OTRA VEZ
+                                    </button>
+                                    <button onClick={() => { playSound('click'); goToMenu(); }} className="btn-option-ludic hover-shine-effect opt-0 p-4 sm:p-5 text-lg sm:text-xl flex justify-center items-center gap-2 md:gap-3">
+                                        <Icons.Home size={28} className="w-6 h-6 sm:w-7 sm:h-7" /> VOLVER AL MENÚ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+                return null;
+            };
+
+            return (
+                <div className="min-h-screen relative overflow-hidden font-sans text-slate-800" onClick={startMusic}>
+                    
+                    {/* AUDIOS NATIVOS */}
+                    <audio id="sfx-bgMusic" className="game-audio" src={AUDIO_URLS.bgMusic} preload="auto" loop></audio>
+                    <audio id="sfx-correct" className="game-audio" src={AUDIO_URLS.correct} preload="auto"></audio>
+                    <audio id="sfx-wrong" className="game-audio" src={AUDIO_URLS.wrong} preload="auto"></audio>
+                    <audio id="sfx-timeUp" className="game-audio" src={AUDIO_URLS.timeUp} preload="auto"></audio>
+                    <audio id="sfx-click" className="game-audio" src={AUDIO_URLS.click} preload="auto"></audio>
+                    <audio id="sfx-select" className="game-audio" src={AUDIO_URLS.select} preload="auto"></audio>
+                    <audio id="sfx-win" className="game-audio" src={AUDIO_URLS.win} preload="auto"></audio>
+                    <audio id="sfx-countdown" className="game-audio" src={AUDIO_URLS.countdown} preload="auto"></audio>
+                    <audio id="sfx-playBtn" className="game-audio" src={AUDIO_URLS.playBtn} preload="auto"></audio>
+
+                    {/* --- FONDO ECOLÓGICO --- */}
+                    <div className="bg-eco-bright"></div>
+                    <div className="screen-shine-sweep"></div>
+                    <RealisticLeaves />
+                    
+                    {/* EFECTOS ESPECIALES OVERLAY */}
+                    {wrongFlash && gameState === 'playing' && <div className="wrong-screen-flash"></div>}
+                    {showConfetti && gameState === 'playing' && <div className="correct-screen-flash"></div>}
+                    {timeUpAnim && gameState === 'playing' && <div className="time-up-overlay"></div>}
+                    {showConfetti && <Confetti amount={gameState === 'result' ? 200 : 50} />}
+
+                    {/* ¡CONTROLES FIJOS RESPONSIVOS, SIEMPRE CLICKEABLES! */}
+                    {!isLoading && gameState !== 'selection_popup' && gameState !== 'countdown' && (
+                        <div className="fixed top-2 right-2 sm:top-4 sm:right-4 md:top-6 md:right-6 z-[99999] flex gap-2 sm:gap-3 pointer-events-auto scale-90 sm:scale-100 transform origin-top-right">
+                            <button onClick={toggleMute} className={`btn-control-fixed ${isMuted ? 'bg-red-50 text-red-500 border-red-300' : 'hover:bg-green-50 text-slate-500 hover:border-green-400'}`} title={isMuted ? "Activar Sonido" : "Silenciar"}>
+                                {isMuted ? <Icons.VolumeX size={24} /> : <Icons.Volume2 size={24} />}
+                            </button>
+                            {isRegistered && (
+                                <button onClick={() => { playSound('click'); goToMenu(); }} className="btn-control-fixed hover:bg-green-50 hover:border-green-400 hover:text-green-500" title="Menú">
+                                    <Icons.Home size={24} />
+                                </button>
+                            )}
+                            {(gameState === 'playing' || gameState === 'result') && (
+                                <button onClick={() => { playSound('click'); startGame(numPlayers); }} className="btn-control-fixed hover:bg-green-50 hover:border-green-400 text-green-600" title="Reiniciar">
+                                    <Icons.Refresh size={24} />
+                                </button>
+                            )}
+                        </div>
+                    )}
+
+                    {/* CONTENEDOR PRINCIPAL */}
+                    <div className={`relative w-full min-h-screen min-h-[100dvh] flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 text-center ${shake ? 'anim-shake-hard' : ''}`}>
+                        {renderView()}
+                    </div>
+
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<React.StrictMode><App /></React.StrictMode>);
+    </script>
+</body>
+</html>
